@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Thêm Từ Khóa - Bot Kiểm Duyệt{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0 text-gray-800">
+        <i class="fas fa-plus"></i>
+        Thêm Từ Khóa Mới
+    </h1>
+    <a href="{{ url_for('keywords') }}" class="btn btn-secondary btn-custom">
+        <i class="fas fa-arrow-left"></i>
+        Quay lại
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-filter"></i>
+                    Thông Tin Từ Khóa
+                </h6>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.keyword.label(class="form-label") }}
+                        {{ form.keyword(class="form-control" + (" is-invalid" if form.keyword.errors else ""), placeholder="Nhập từ khóa cần lọc...") }}
+                        {% if form.keyword.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.keyword.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            Từ khóa sẽ được chuyển thành chữ thường tự động
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.category.label(class="form-label") }}
+                        {{ form.category(class="form-select" + (" is-invalid" if form.category.errors else "")) }}
+                        {% if form.category.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.category.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.severity.label(class="form-label") }}
+                        {{ form.severity(class="form-select" + (" is-invalid" if form.severity.errors else "")) }}
+                        {% if form.severity.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.severity.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            Mức độ nghiêm trọng ảnh hưởng đến thời gian mute
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.context.label(class="form-label") }}
+                        {{ form.context(class="form-control" + (" is-invalid" if form.context.errors else ""), rows="3", placeholder="Mô tả ngữ cảnh sử dụng từ khóa này (tùy chọn)...") }}
+                        {% if form.context.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.context.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            Ví dụ: "Sử dụng trong câu chửi thề", "Từ gạ gẫm trẻ em", v.v.
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check">
+                            {{ form.is_active(class="form-check-input") }}
+                            {{ form.is_active.label(class="form-check-label") }}
+                        </div>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            Chỉ những từ khóa được kích hoạt mới được sử dụng để lọc
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('keywords') }}" class="btn btn-secondary btn-custom me-md-2">
+                            <i class="fas fa-times"></i>
+                            Hủy
+                        </a>
+                        {{ form.submit(class="btn btn-primary btn-custom") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Help Card -->
+        <div class="card shadow mt-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">
+                    <i class="fas fa-lightbulb"></i>
+                    Gợi Ý Sử Dụng
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-danger">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Ngôn từ thô tục
+                        </h6>
+                        <ul class="small text-muted">
+                            <li>Các từ chửi bậy, thô tục</li>
+                            <li>Ngôn từ không phù hợp</li>
+                            <li>Mức độ: Cao (mute lâu)</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-warning">
+                            <i class="fas fa-user-times"></i>
+                            Quấy rối, gạ gẫm
+                        </h6>
+                        <ul class="small text-muted">
+                            <li>Từ ngữ gạ gẫm, quấy rối</li>
+                            <li>Nội dung không phù hợp với trẻ em</li>
+                            <li>Mức độ: Rất cao</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <h6 class="text-info">
+                            <i class="fas fa-angry"></i>
+                            Nội dung xúc phạm
+                        </h6>
+                        <ul class="small text-muted">
+                            <li>Lăng mạ, xúc phạm cá nhân</li>
+                            <li>Nội dung kích động</li>
+                            <li>Mức độ: Trung bình đến cao</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-secondary">
+                            <i class="fas fa-volume-up"></i>
+                            Spam
+                        </h6>
+                        <ul class="small text-muted">
+                            <li>Tin nhắn lặp lại nhiều lần</li>
+                            <li>Nội dung quảng cáo không mong muốn</li>
+                            <li>Mức độ: Thấp đến trung bình</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

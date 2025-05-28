@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Bot Kiểm Duyệt{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0 text-gray-800">
+        <i class="fas fa-tachometer-alt"></i>
+        Dashboard Tổng Quan
+    </h1>
+    <div class="text-muted">
+        <i class="fas fa-clock"></i>
+        Dữ liệu 7 ngày qua
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stats-card danger">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                            Tổng Vi Phạm
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-white">{{ total_violations }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-exclamation-triangle fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stats-card info">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                            Từ Khóa Đang Lọc
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-white">{{ total_keywords }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-filter fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stats-card warning">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                            Loại Vi Phạm
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-white">{{ violation_stats|length }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-list fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card stats-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-white text-uppercase mb-1">
+                            Người Vi Phạm
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-white">{{ top_violators|length }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row">
+    <!-- Violation Types Chart -->
+    <div class="col-xl-6 col-lg-7">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-chart-pie"></i>
+                    Thống Kê Theo Loại Vi Phạm
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if violation_stats %}
+                    <div class="chart-container">
+                        {% for vtype, count in violation_stats.items() %}
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="font-weight-bold">{{ vtype }}</span>
+                                    <span class="badge badge-primary">{{ count }}</span>
+                                </div>
+                                <div class="progress" style="height: 20px;">
+                                    <div class="progress-bar" role="progressbar" 
+                                         style="width: {{ (count / total_violations * 100) if total_violations > 0 else 0 }}%"
+                                         aria-valuenow="{{ count }}" aria-valuemin="0" aria-valuemax="{{ total_violations }}">
+                                        {{ "%.1f"|format((count / total_violations * 100) if total_violations > 0 else 0) }}%
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-chart-pie fa-3x mb-3"></i>
+                        <p>Không có dữ liệu vi phạm trong 7 ngày qua</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Violators -->
+    <div class="col-xl-6 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-users"></i>
+                    Top Người Vi Phạm
+                </h6>
+            </div>
+            <div class="card-body">
+                {% if top_violators %}
+                    <div class="list-group list-group-flush">
+                        {% for user_id, data in top_violators %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ data.username }}</h6>
+                                    <small class="text-muted">ID: {{ user_id }}</small>
+                                </div>
+                                <span class="badge badge-danger badge-pill">{{ data.count }} vi phạm</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <p>Không có dữ liệu vi phạm</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-bolt"></i>
+                    Thao Tác Nhanh
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('add_keyword') }}" class="btn btn-primary btn-custom w-100">
+                            <i class="fas fa-plus"></i>
+                            Thêm Từ Khóa
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('keywords') }}" class="btn btn-info btn-custom w-100">
+                            <i class="fas fa-list"></i>
+                            Xem Từ Khóa
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('violations') }}" class="btn btn-warning btn-custom w-100">
+                            <i class="fas fa-history"></i>
+                            Lịch Sử Vi Phạm
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="{{ url_for('settings') }}" class="btn btn-secondary btn-custom w-100">
+                            <i class="fas fa-cog"></i>
+                            Cài Đặt Bot
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

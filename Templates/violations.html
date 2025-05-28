@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+
+{% block title %}Lịch Sử Vi Phạm - Bot Kiểm Duyệt{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0 text-gray-800">
+        <i class="fas fa-exclamation-triangle"></i>
+        Lịch Sử Vi Phạm
+    </h1>
+</div>
+
+<!-- Filter Controls -->
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label for="type" class="form-label">Lọc theo loại vi phạm:</label>
+                <select name="type" id="type" class="form-select">
+                    <option value="">Tất cả loại</option>
+                    {% for vtype in violation_types %}
+                        <option value="{{ vtype }}" {{ 'selected' if vtype == current_type }}>{{ vtype }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="days" class="form-label">Thời gian:</label>
+                <select name="days" id="days" class="form-select">
+                    <option value="1" {{ 'selected' if current_days == 1 }}>1 ngày qua</option>
+                    <option value="7" {{ 'selected' if current_days == 7 }}>7 ngày qua</option>
+                    <option value="30" {{ 'selected' if current_days == 30 }}>30 ngày qua</option>
+                    <option value="90" {{ 'selected' if current_days == 90 }}>3 tháng qua</option>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-outline-primary me-2">
+                    <i class="fas fa-search"></i> Lọc
+                </button>
+                <a href="{{ url_for('violations') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times"></i> Xóa bộ lọc
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Violations Table -->
+<div class="card shadow">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">
+            Danh Sách Vi Phạm
+            {% if violations.total %}
+                <span class="badge badge-danger">{{ violations.total }} vi phạm</span>
+            {% endif %}
+        </h6>
+    </div>
+    <div class="card-body">
+        {% if violations.items %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Thời gian</th>
+                            <th>Người dùng</th>
+                            <th>Loại vi phạm</th>
+                            <th>Nội dung</th>
+                            <th>Độ tin cậy AI</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for violation in violations.items %}
+                            <tr>
+                                <td>
+                                    <small class="text-muted">
+                                        {{ violation.timestamp.strftime('%d/%m/%Y %H:%M') }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>{{ violation.username }}</strong>
+                                        <br>
+                                        <small class="text-muted">ID: {{ violation.user_id }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if 'thô tục' in violation.violation_type.lower() %}
+                                        <span class="badge bg-danger">{{ violation.violation_type }}</span>
+                                    {% elif 'gạ gẫm' in violation.violation_type.lower() or 'quấy rối' in violation.violation_type.lower() %}
+                                        <span class="badge bg-warning">{{ violation.violation_type }}</span>
+                                    {% elif 'xúc phạm' in violation.violation_type.lower() %}
+                                        <span class="badge bg-info">{{ violation.violation_type }}</span>
+                                    {% elif 'discord' in violation.violation_type.lower() %}
+                                        <span class="badge bg-secondary">{{ violation.violation_type }}</span>
+                                    {% else %}
+                                        <span class="badge bg-dark">{{ violation.violation_type }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="text-truncate" style="max-width: 200px;" title="{{ violation.message_content }}">
+                                        {{ violation.message_content }}
+                                    </div>
+                                    {% if violation.detected_keywords %}
+                                        <br>
+                                        <small class="text-muted">
+                                            <i class="fas fa-search"></i>
+                                            Từ khóa: {{ violation.detected_keywords }}
+                                        </small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if violation.ai_confidence %}
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar 
+                                                {{ 'bg-success' if violation.ai_confidence > 0.8 else 'bg-warning' if violation.ai_confidence > 0.6 else 'bg-danger' }}" 
+                                                role="progressbar" 
+                                                style="width: {{ (violation.ai_confidence * 100)|round }}%">
+                                                {{ "%.0f"|format(violation.ai_confidence * 100) }}%
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <small class="text-muted">Từ khóa</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if violation.action_taken == 'mute' %}
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-volume-mute"></i> Mute
+                                        </span>
+                                    {% elif violation.action_taken == 'delete' %}
+                                        <span class="badge bg-danger">
+                                            <i class="fas fa-trash"></i> Xóa
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-info">{{ violation.action_taken }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if violations.pages > 1 %}
+                <nav aria-label="Pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if violations.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('violations', page=violations.prev_num, type=current_type, days=current_days) }}">
+                                    Trước
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for page_num in violations.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != violations.page %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('violations', page=page_num, type=current_type, days=current_days) }}">
+                                            {{ page_num }}
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ page_num }}</span>
+                                    </li>
+                                {% endif %}
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if violations.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('violations', page=violations.next_num, type=current_type, days=current_days) }}">
+                                    Sau
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                <h5 class="text-muted">Không có vi phạm nào</h5>
+                <p class="text-muted">
+                    {% if current_type or current_days != 7 %}
+                        Không tìm thấy vi phạm nào với bộ lọc hiện tại.
+                    {% else %}
+                        Chưa có vi phạm nào được ghi nhận.
+                    {% endif %}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

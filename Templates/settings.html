@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Cài Đặt - Bot Kiểm Duyệt{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0 text-gray-800">
+        <i class="fas fa-cog"></i>
+        Cài Đặt Bot
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-sliders-h"></i>
+                    Cấu Hình Bot
+                </h6>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.mute_duration.label(class="form-label") }}
+                        {{ form.mute_duration(class="form-control" + (" is-invalid" if form.mute_duration.errors else "")) }}
+                        {% if form.mute_duration.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.mute_duration.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            Thời gian mute cho các vi phạm thường (ngôn từ thô tục, xúc phạm)
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.invite_mute_duration.label(class="form-label") }}
+                        {{ form.invite_mute_duration(class="form-control" + (" is-invalid" if form.invite_mute_duration.errors else "")) }}
+                        {% if form.invite_mute_duration.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.invite_mute_duration.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            Thời gian mute cho việc chia sẻ link Discord không được phép
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="form-check">
+                            {{ form.ai_moderation(class="form-check-input") }}
+                            {{ form.ai_moderation.label(class="form-check-label") }}
+                        </div>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i>
+                            Khi bật, bot sẽ sử dụng AI để phân tích nội dung chính xác hơn. Nếu tắt, chỉ dùng từ khóa.
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        {{ form.submit(class="btn btn-primary btn-custom") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Status Card -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-success">
+                    <i class="fas fa-robot"></i>
+                    Trạng Thái Bot
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <div class="mb-3">
+                        <i class="fas fa-circle text-success fa-2x"></i>
+                    </div>
+                    <h5 class="text-success">Bot đang hoạt động</h5>
+                    <p class="text-muted small">Đang theo dõi và kiểm duyệt tin nhắn</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-info">
+                    <i class="fas fa-chart-bar"></i>
+                    Thống Kê Nhanh
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 border-end">
+                        <div class="fs-5 font-weight-bold text-primary">{{ total_keywords or 0 }}</div>
+                        <div class="small text-muted">Từ khóa</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="fs-5 font-weight-bold text-danger">{{ total_violations or 0 }}</div>
+                        <div class="small text-muted">Vi phạm (7 ngày)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- API Endpoints -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-secondary">
+                    <i class="fas fa-code"></i>
+                    API Endpoints (Cho Bot Discord)
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Endpoint</th>
+                                <th>Mô tả</th>
+                                <th>URL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>GET /api/keywords</code></td>
+                                <td>Lấy danh sách từ khóa đang hoạt động</td>
+                                <td><code>{{ request.host_url }}api/keywords</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>GET /api/settings</code></td>
+                                <td>Lấy cài đặt bot hiện tại</td>
+                                <td><code>{{ request.host_url }}api/settings</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Lưu ý:</strong> Bot Discord sẽ tự động sử dụng các API này để cập nhật từ khóa và cài đặt mới nhất từ dashboard.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

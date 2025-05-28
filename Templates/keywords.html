@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Quản Lý Từ Khóa - Bot Kiểm Duyệt{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0 text-gray-800">
+        <i class="fas fa-filter"></i>
+        Quản Lý Từ Khóa Lọc
+    </h1>
+    <a href="{{ url_for('add_keyword') }}" class="btn btn-primary btn-custom">
+        <i class="fas fa-plus"></i>
+        Thêm Từ Khóa Mới
+    </a>
+</div>
+
+<!-- Filter Controls -->
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label for="category" class="form-label">Lọc theo loại:</label>
+                <select name="category" id="category" class="form-select">
+                    <option value="">Tất cả loại</option>
+                    {% for value, name in categories %}
+                        <option value="{{ value }}" {{ 'selected' if value == current_category }}>{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="search" class="form-label">Tìm kiếm từ khóa:</label>
+                <input type="text" name="search" id="search" class="form-control" 
+                       placeholder="Nhập từ khóa..." value="{{ current_search }}">
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-outline-primary me-2">
+                    <i class="fas fa-search"></i> Tìm kiếm
+                </button>
+                <a href="{{ url_for('keywords') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-times"></i> Xóa bộ lọc
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Keywords Table -->
+<div class="card shadow">
+    <div class="card-header py-3">
+        <h6 class="m-0 font-weight-bold text-primary">
+            Danh Sách Từ Khóa
+            {% if keywords.total %}
+                <span class="badge badge-info">{{ keywords.total }} từ khóa</span>
+            {% endif %}
+        </h6>
+    </div>
+    <div class="card-body">
+        {% if keywords.items %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Từ Khóa</th>
+                            <th>Loại Vi Phạm</th>
+                            <th>Mức Độ</th>
+                            <th>Ngữ Cảnh</th>
+                            <th>Trạng Thái</th>
+                            <th>Ngày Tạo</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for keyword in keywords.items %}
+                            <tr>
+                                <td>
+                                    <strong>{{ keyword.keyword }}</strong>
+                                </td>
+                                <td>
+                                    {% if keyword.category == 'PROFANITY' %}
+                                        <span class="badge bg-danger">Ngôn từ thô tục</span>
+                                    {% elif keyword.category == 'HARASSMENT' %}
+                                        <span class="badge bg-warning">Quấy rối, gạ gẫm</span>
+                                    {% elif keyword.category == 'OFFENSIVE' %}
+                                        <span class="badge bg-info">Nội dung xúc phạm</span>
+                                    {% elif keyword.category == 'SPAM' %}
+                                        <span class="badge bg-secondary">Spam</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if keyword.severity == 'high' %}
+                                        <span class="badge bg-danger">Cao</span>
+                                    {% elif keyword.severity == 'medium' %}
+                                        <span class="badge bg-warning">Trung bình</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Thấp</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if keyword.context %}
+                                        <small class="text-muted">{{ keyword.context[:50] }}{% if keyword.context|length > 50 %}...{% endif %}</small>
+                                    {% else %}
+                                        <small class="text-muted">Không có</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if keyword.is_active %}
+                                        <span class="badge bg-success">Hoạt động</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Tạm dừng</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ keyword.created_at.strftime('%d/%m/%Y') }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm" role="group">
+                                        <a href="{{ url_for('edit_keyword', keyword_id=keyword.id) }}" 
+                                           class="btn btn-outline-primary" title="Chỉnh sửa">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form method="POST" action="{{ url_for('toggle_keyword', keyword_id=keyword.id) }}" 
+                                              style="display: inline;">
+                                            <button type="submit" class="btn btn-outline-warning" 
+                                                    title="{{ 'Tạm dừng' if keyword.is_active else 'Kích hoạt' }}">
+                                                <i class="fas fa-{{ 'pause' if keyword.is_active else 'play' }}"></i>
+                                            </button>
+                                        </form>
+                                        <form method="POST" action="{{ url_for('delete_keyword', keyword_id=keyword.id) }}" 
+                                              style="display: inline;"
+                                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa từ khóa này?')">
+                                            <button type="submit" class="btn btn-outline-danger" title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if keywords.pages > 1 %}
+                <nav aria-label="Pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if keywords.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('keywords', page=keywords.prev_num, category=current_category, search=current_search) }}">
+                                    Trước
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% for page_num in keywords.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != keywords.page %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('keywords', page=page_num, category=current_category, search=current_search) }}">
+                                            {{ page_num }}
+                                        </a>
+                                    </li>
+                                {% else %}
+                                    <li class="page-item active">
+                                        <span class="page-link">{{ page_num }}</span>
+                                    </li>
+                                {% endif %}
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">...</span>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if keywords.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('keywords', page=keywords.next_num, category=current_category, search=current_search) }}">
+                                    Sau
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">Không tìm thấy từ khóa nào</h5>
+                <p class="text-muted mb-4">
+                    {% if current_category or current_search %}
+                        Thử thay đổi bộ lọc hoặc tìm kiếm khác.
+                    {% else %}
+                        Chưa có từ khóa nào được thêm.
+                    {% endif %}
+                </p>
+                <a href="{{ url_for('add_keyword') }}" class="btn btn-primary btn-custom">
+                    <i class="fas fa-plus"></i>
+                    Thêm Từ Khóa Đầu Tiên
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
