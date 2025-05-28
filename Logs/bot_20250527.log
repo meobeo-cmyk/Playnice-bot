@@ -1,0 +1,38 @@
+2025-05-27 18:40:46,070 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-05-27 18:40:46,070 - moderation - WARNING - OpenAI API key not found, using keyword-based filtering only
+2025-05-27 18:40:46,071 - database - INFO - Created new database file: violations.json
+2025-05-27 18:40:46,071 - __main__ - ERROR - DISCORD_BOT_TOKEN không được tìm thấy trong environment variables!
+2025-05-27 18:41:51,895 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-05-27 18:41:52,007 - moderation - INFO - OpenAI client initialized successfully
+2025-05-27 18:41:52,008 - discord.client - INFO - logging in using static token
+2025-05-27 18:41:52,771 - __main__ - ERROR - Lỗi khi chạy bot: Shard ID None is requesting privileged intents that have not been explicitly enabled in the developer portal. It is recommended to go to https://discord.com/developers/applications/ and explicitly enable the privileged intents within your application's page. If this is not possible, then consider disabling the privileged intents instead.
+2025-05-27 18:49:26,515 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-05-27 18:49:26,773 - moderation - INFO - OpenAI client initialized successfully
+2025-05-27 18:49:26,775 - discord.client - INFO - logging in using static token
+2025-05-27 18:49:27,621 - __main__ - ERROR - Lỗi khi chạy bot: Shard ID None is requesting privileged intents that have not been explicitly enabled in the developer portal. It is recommended to go to https://discord.com/developers/applications/ and explicitly enable the privileged intents within your application's page. If this is not possible, then consider disabling the privileged intents instead.
+2025-05-27 18:51:07,010 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-05-27 18:51:07,042 - moderation - INFO - OpenAI client initialized successfully
+2025-05-27 18:51:07,043 - discord.client - INFO - logging in using static token
+2025-05-27 18:51:07,950 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 7b603265bc23a945f777f0f86de5ad1c).
+2025-05-27 18:51:09,963 - __main__ - INFO - PlayNice#2318 đã đăng nhập và sẵn sàng!
+2025-05-27 18:51:10,426 - __main__ - INFO - Đã đồng bộ 2 slash command(s)
+2025-05-27 18:51:32,875 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-05-27 18:51:32,876 - moderation - ERROR - OpenAI moderation error: Error code: 401 - {'error': {'message': 'Incorrect API key provided: 13769917*******2992. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}
+2025-05-27 18:51:32,876 - moderation - WARNING - AI moderation failed, falling back to keyword filtering: Error code: 401 - {'error': {'message': 'Incorrect API key provided: 13769917*******2992. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}
+2025-05-27 18:51:33,228 - __main__ - ERROR - Lỗi khi xử lý vi phạm: 403 Forbidden (error code: 50013): Missing Permissions
+2025-05-27 18:51:40,326 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-05-27 18:51:40,327 - moderation - ERROR - OpenAI moderation error: Error code: 401 - {'error': {'message': 'Incorrect API key provided: 13769917*******2992. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}
+2025-05-27 18:51:40,327 - moderation - WARNING - AI moderation failed, falling back to keyword filtering: Error code: 401 - {'error': {'message': 'Incorrect API key provided: 13769917*******2992. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}
+2025-05-27 18:51:40,680 - __main__ - ERROR - Lỗi khi xử lý Discord invite: 403 Forbidden (error code: 50013): Missing Permissions
+2025-05-27 18:51:48,699 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-05-27 18:51:48,700 - moderation - ERROR - OpenAI moderation error: Error code: 401 - {'error': {'message': 'Incorrect API key provided: 13769917*******2992. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}
+2025-05-27 18:51:48,700 - moderation - WARNING - AI moderation failed, falling back to keyword filtering: Error code: 401 - {'error': {'message': 'Incorrect API key provided: 13769917*******2992. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}
+2025-05-27 18:52:00,049 - httpx - INFO - HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 401 Unauthorized"
+2025-05-27 18:52:00,049 - moderation - ERROR - OpenAI moderation error: Error code: 401 - {'error': {'message': 'Incorrect API key provided: 13769917*******2992. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}
+2025-05-27 18:52:00,049 - moderation - WARNING - AI moderation failed, falling back to keyword filtering: Error code: 401 - {'error': {'message': 'Incorrect API key provided: 13769917*******2992. You can find your API key at https://platform.openai.com/account/api-keys.', 'type': 'invalid_request_error', 'param': None, 'code': 'invalid_api_key'}}
+2025-05-27 19:06:16,873 - discord.client - WARNING - PyNaCl is not installed, voice will NOT be supported
+2025-05-27 19:06:16,908 - moderation - INFO - OpenAI client initialized successfully
+2025-05-27 19:06:16,909 - discord.client - INFO - logging in using static token
+2025-05-27 19:06:17,646 - discord.gateway - INFO - Shard ID None has connected to Gateway (Session ID: 855cd1bcb656916e2d428ea0d61bb79e).
+2025-05-27 19:06:19,656 - __main__ - INFO - PlayNice#2318 đã đăng nhập và sẵn sàng!
+2025-05-27 19:06:20,174 - __main__ - INFO - Đã đồng bộ 2 slash command(s)
